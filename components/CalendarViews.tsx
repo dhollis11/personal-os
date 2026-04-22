@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Label } from './ui';
 import type { CalendarEvent } from '@/types';
 
@@ -155,7 +156,37 @@ export function MonthView({ now }: { now: Date }) {
   );
 }
 
-export function Quote({ text, author }: { text: string; author: string }) {
+export function Quote({
+  text: textProp,
+  author: authorProp,
+}: {
+  text?: string;
+  author?: string;
+}) {
+  // Fetch live quote of the day. Falls back to props (or seed) if the API
+  // can't be reached. ZenQuotes' free tier requires the attribution link.
+  const [text, setText] = useState(textProp ?? '');
+  const [author, setAuthor] = useState(authorProp ?? '');
+  const [source, setSource] = useState<'zenquotes' | 'seed' | 'prop'>(
+    textProp ? 'prop' : 'seed',
+  );
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/quote')
+      .then((r) => r.json())
+      .then((d) => {
+        if (!alive || !d.quote) return;
+        setText(d.quote.text);
+        setAuthor(d.quote.author);
+        setSource(d.source);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   return (
     <div>
       <Label>Quote · Daily</Label>
@@ -165,6 +196,17 @@ export function Quote({ text, author }: { text: string; author: string }) {
       <div className="text-inkDim text-[11px] mt-2 font-mono tracking-label">
         — {author.toUpperCase()}
       </div>
+      {source === 'zenquotes' && (
+        <a
+          href="https://zenquotes.io/"
+          target="_blank"
+          rel="noreferrer"
+          className="block mt-2 text-[9px] text-inkDim/60 font-mono tracking-label hover:text-inkDim transition-colors"
+          title="Quotes provided by ZenQuotes"
+        >
+          via zenquotes.io
+        </a>
+      )}
     </div>
   );
 }
