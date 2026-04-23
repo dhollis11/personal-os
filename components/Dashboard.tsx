@@ -16,19 +16,38 @@ import {
   SEED_EVENTS, SEED_TASKS, SEED_OCCASIONS, SEED_NEWS, SEED_QUOTE,
 } from '@/lib/seed-data';
 import { getBrowserSupabase, isSupabaseConfigured } from '@/lib/supabase-browser';
-import type { Task, Occasion } from '@/types';
+import type { Task, TaskList, Occasion, NewsItem, Quote as QuoteType } from '@/types';
 
 export function Dashboard() {
   const [view, setView] = useState<View>('Day');
   const [now, setNow] = useState(() => new Date());
   const [user, setUser] = useState<User | null>(null);
   const [tasks, setTasks] = useState<Task[]>(SEED_TASKS);
+  const [lists, setLists] = useState<TaskList[]>([]);
   const [occasions, setOccasions] = useState<Occasion[]>(SEED_OCCASIONS);
+  const [news, setNews] = useState<NewsItem[]>(SEED_NEWS);
+  const [quote, setQuote] = useState<QuoteType>(SEED_QUOTE);
 
   // Tick the clock every 15s so the "NOW" marker and greeting stay accurate
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 15_000);
     return () => clearInterval(id);
+  }, []);
+
+  // Fetch live news (RSS) and quote on mount — no auth required.
+  useEffect(() => {
+    fetch('/api/news')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.news?.length) setNews(d.news);
+      })
+      .catch(() => {});
+    fetch('/api/quote')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.quote?.text) setQuote(d.quote);
+      })
+      .catch(() => {});
   }, []);
 
   // Auth state + signed-in data fetch
@@ -51,6 +70,12 @@ export function Dashboard() {
         if (d.tasks && d.source === 'supabase') setTasks(d.tasks);
       })
       .catch(() => {});
+    fetch('/api/task-lists')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.lists && d.source === 'supabase') setLists(d.lists);
+      })
+      .catch(() => {});
     fetch('/api/occasions')
       .then((r) => r.json())
       .then((d) => {
@@ -63,6 +88,7 @@ export function Dashboard() {
     if (!isSupabaseConfigured) return;
     await getBrowserSupabase().auth.signOut();
     setTasks(SEED_TASKS);
+    setLists([]);
     setOccasions(SEED_OCCASIONS);
   }
 
@@ -102,8 +128,10 @@ export function Dashboard() {
                   <div className="mt-2.5">
                     <Tasks
                       tasks={tasks}
+                      lists={lists}
                       canEdit={canEdit}
-                      onChange={setTasks}
+                      onTasksChange={setTasks}
+                      onListsChange={setLists}
                     />
                   </div>
                   {!canEdit && (
@@ -121,7 +149,7 @@ export function Dashboard() {
                 <Card>
                   <Label>Feed · Curated</Label>
                   <div className="mt-2.5">
-                    <News items={SEED_NEWS} limit={5} />
+                    <News items={news} limit={5} />
                   </div>
                 </Card>
                 <Card>
@@ -131,7 +159,7 @@ export function Dashboard() {
                   </div>
                 </Card>
                 <Card>
-                  <Quote text={SEED_QUOTE.text} author={SEED_QUOTE.author} />
+                  <Quote text={quote.text} author={quote.author} />
                 </Card>
               </div>
             </div>
@@ -156,7 +184,7 @@ export function Dashboard() {
               <Card>
                 <Label>Feed</Label>
                 <div className="mt-2.5">
-                  <News items={SEED_NEWS} limit={4} />
+                  <News items={news} limit={4} />
                 </div>
               </Card>
             </div>
@@ -184,12 +212,12 @@ export function Dashboard() {
                 </div>
               </Card>
               <Card>
-                <Quote text={SEED_QUOTE.text} author={SEED_QUOTE.author} />
+                <Quote text={quote.text} author={quote.author} />
               </Card>
               <Card>
                 <Label>Feed</Label>
                 <div className="mt-2.5">
-                  <News items={SEED_NEWS} limit={3} />
+                  <News items={news} limit={3} />
                 </div>
               </Card>
             </div>
