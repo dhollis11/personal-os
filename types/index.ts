@@ -57,7 +57,17 @@ export type FxQuote = {
   spark: number[];         // recent series for sparkline
 };
 
-export type NewsCategory = 'DISC GOLF' | 'BLUE JACKETS' | 'US' | 'MOVIES';
+export type NewsCategory =
+     | 'DISC GOLF'
+     | 'BLUE JACKETS'
+     | 'NHL'
+     | 'US'
+     | 'MOVIES'
+     | 'TECH'
+     | 'BUSINESS'
+     | 'SPORTS'
+     | 'LOCAL'
+     | (string & {}); // allow custom categories without losing autocomplete
 
 export type NewsItem = {
   id: string;
