@@ -16,22 +16,51 @@ export const SEED_EVENTS: CalendarEvent[] = [
   { id: 'e7', start: '19:15', end: '21:00', title: 'Blue Jackets vs Rangers', where: 'Nationwide Arena', type: 'personal', color: 'red', source: 'stub' },
 ];
 
+// Helper to build a seed task with all required fields at their defaults.
+// Saves repeating list_id: null, notes: null, etc. on every row.
+function seedTask(
+  id: string,
+  list_name: string,
+  title: string,
+  due: string,
+  priority: 'H' | 'M' | 'L',
+  done = false,
+): Task {
+  return {
+    id,
+    user_id: 'seed',
+    list_id: null,
+    list_name,
+    title,
+    notes: null,
+    due,
+    due_at: null,
+    priority,
+    done,
+    sort_order: 0,
+    recurrence: null,
+    parent_id: null,
+    created_at: '',
+    updated_at: '',
+  };
+}
+
 export const SEED_TASKS: Task[] = [
-  { id: 't1', list_name: 'Work', title: 'Finalize Q2 roadmap deck',      due: 'Today', due_at: null, done: false, priority: 'H', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't2', list_name: 'Work', title: 'Review PR #3421 — auth layer',  due: 'Today', due_at: null, done: false, priority: 'M', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't3', list_name: 'Work', title: 'Draft vendor comparison memo',  due: 'Thu',   due_at: null, done: false, priority: 'M', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't4', list_name: 'Work', title: 'Send offer — S. Patel',         due: 'Mon',   due_at: null, done: true,  priority: 'H', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't5', list_name: 'Work', title: 'Book flight ORD → MNL',         due: 'Fri',   due_at: null, done: false, priority: 'L', user_id: 'seed', created_at: '', updated_at: '' },
+  seedTask('t1',  'Work',      'Finalize Q2 roadmap deck',      'Today',  'H'),
+  seedTask('t2',  'Work',      'Review PR #3421 — auth layer',  'Today',  'M'),
+  seedTask('t3',  'Work',      'Draft vendor comparison memo',  'Thu',    'M'),
+  seedTask('t4',  'Work',      'Send offer — S. Patel',         'Mon',    'H', true),
+  seedTask('t5',  'Work',      'Book flight ORD → MNL',         'Fri',    'L'),
 
-  { id: 't6', list_name: 'Home', title: 'Pick up dry cleaning',          due: 'Today', due_at: null, done: false, priority: 'L', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't7', list_name: 'Home', title: 'Pay electric bill',             due: 'Apr 28', due_at: null, done: false, priority: 'M', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't8', list_name: 'Home', title: 'Call mom',                      due: 'Today', due_at: null, done: false, priority: 'H', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't9', list_name: 'Home', title: 'Replace furnace filter',        due: 'Apr 30', due_at: null, done: false, priority: 'L', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't10', list_name: 'Home', title: "RSVP — Jake's wedding",        due: 'May 2', due_at: null, done: true,  priority: 'M', user_id: 'seed', created_at: '', updated_at: '' },
+  seedTask('t6',  'Home',      'Pick up dry cleaning',          'Today',  'L'),
+  seedTask('t7',  'Home',      'Pay electric bill',             'Apr 28', 'M'),
+  seedTask('t8',  'Home',      'Call mom',                      'Today',  'H'),
+  seedTask('t9',  'Home',      'Replace furnace filter',        'Apr 30', 'L'),
+  seedTask('t10', 'Home',      "RSVP — Jake's wedding",         'May 2',  'M', true),
 
-  { id: 't11', list_name: 'Disc Golf', title: 'Restring putters',        due: 'Sat', due_at: null, done: false, priority: 'L', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't12', list_name: 'Disc Golf', title: 'Register — Delaware Open', due: 'May 10', due_at: null, done: false, priority: 'M', user_id: 'seed', created_at: '', updated_at: '' },
-  { id: 't13', list_name: 'Disc Golf', title: 'New midrange — Buzzz vs Mako3', due: '—', due_at: null, done: false, priority: 'L', user_id: 'seed', created_at: '', updated_at: '' },
+  seedTask('t11', 'Disc Golf', 'Restring putters',              'Sat',    'L'),
+  seedTask('t12', 'Disc Golf', 'Register — Delaware Open',      'May 10', 'M'),
+  seedTask('t13', 'Disc Golf', 'New midrange — Buzzz vs Mako3', '—',      'L'),
 ];
 
 export const SEED_OCCASIONS: Occasion[] = [
