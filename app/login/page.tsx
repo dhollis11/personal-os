@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getBrowserSupabase, isSupabaseConfigured } from '@/lib/supabase-browser';
 
 export default function LoginPage() {
@@ -8,6 +8,13 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // If the auth callback bounced us back with an error in the URL, surface it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error');
+    if (err) setError(err);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
